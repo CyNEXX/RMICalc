@@ -154,7 +154,7 @@
 }
 
 .ta-display > * {
-    -fx-font-size: 14;
+    -fx-font-size: 13;
     -fx-alignment: center-right;
     -fx-text-alignment: right;
     -fx-font-family: "Monospace";

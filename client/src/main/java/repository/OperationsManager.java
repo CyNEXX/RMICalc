@@ -9,14 +9,12 @@ import java.rmi.RemoteException;
 public class OperationsManager {
 
     private ClientToServerConnection conn;
-    /*    private static OperationsManager instance = null;*/
 
     public OperationsManager(ClientToServerConnection conn) {
         this.conn = conn;
     }
 
     public Double resolve(Operation operation) throws RemoteException {
-        System.out.println("OperationsManager: " + operation.getType().getName() + " " + operation);
         if (!operation.isEager()) {
             if (operation.hasX() && operation.hasY() && !(operation.getType().getName().equals("none"))) {
 

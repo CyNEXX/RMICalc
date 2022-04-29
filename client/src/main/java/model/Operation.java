@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Locale;
+
 import static utilities.Validation.validate;
 import static utilities.Manipulation.*;
 
@@ -31,6 +33,7 @@ public class Operation {
 
     public void setX(Double x) {
         this.x = x;
+        this.xLabel = trimAndString(x);
     }
 
     public Double getY() {
@@ -39,6 +42,7 @@ public class Operation {
 
     public void setY(Double y) {
         this.y = y;
+        this.yLabel = trimAndString(y);
     }
 
     public String getSign() {
@@ -109,10 +113,17 @@ public class Operation {
         return result != null;
     }
 
+    public boolean isResolvable() {
+        return !locked;
+    }
+
+    public void setResolvable(boolean value) {
+        locked = !value;
+    }
+
     public void setResult(Double result) {
         this.result = result;
-        System.out.println("R -> " + result);
-        this.resultLabel = trimNumberIfPossible(result).toString();
+        this.resultLabel = trimAndString(result);
     }
 
     public OperationTypes getType() {
@@ -121,12 +132,16 @@ public class Operation {
 
     public void reset() {
         this.type = OperationTypes.NONE;
-        this.x = 0.0;
+        this.x = null;
         this.y = null;
         this.xLabel = null;
         this.yLabel = null;
         this.result = null;
         this.locked = true;
+    }
+
+    public boolean hasType() {
+        return this.getType() != null && this.getType().getType() != 0;
     }
 
     @Override

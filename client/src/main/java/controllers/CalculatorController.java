@@ -59,25 +59,24 @@ public class CalculatorController implements Initializable {
     private final BooleanProperty isValidAddressProperty = new SimpleBooleanProperty();
     private final BooleanProperty isValidPortProperty = new SimpleBooleanProperty();
 
-    private final BooleanProperty optionsEnabledProperty = new SimpleBooleanProperty();
-    private final BooleanProperty operationsEnabledProperty = new SimpleBooleanProperty();
+    private final BooleanProperty optionsDisabledProperty = new SimpleBooleanProperty();
+    private final BooleanProperty operationsDisabledProperty = new SimpleBooleanProperty();
 
     private final IntegerProperty appStatus = new SimpleIntegerProperty();
     private final StringProperty calcInputTextProp = new SimpleStringProperty();
 
-    private final BooleanProperty headTextInputsEnabled = new SimpleBooleanProperty();
-    private final BooleanProperty connectButtonEnabled = new SimpleBooleanProperty();
+    private final BooleanProperty memoryButtonsDisabledProp = new SimpleBooleanProperty();
+    private final BooleanProperty connectButtonDisabled = new SimpleBooleanProperty();
     private final BooleanProperty portFocusedProperty = new SimpleBooleanProperty();
 
-    private static boolean newInput = true;
+    private static boolean newInput = false;
     private static List<Button> buttonsWithKeys;
-    private static Double resultSoFar = 0.0;
 
-
-    private Operation operation;
-    private Operation operationPreview;
-    private Operation tempEagerOperation;
+    private Operation eagerOp;
+    private Operation currentOp;
     private OperationsManager opManager;
+
+    private static Double memoryNumber = 0.0;
 
     ClientStatuses cs = OFFLINE;
     ClientToServerConnection c;
@@ -86,7 +85,7 @@ public class CalculatorController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("Initializing...");
-        Font.loadFont(getClass().getClassLoader().getResource("fonts/software_tester_7.ttf").toExternalForm(), 10);
+        Font.loadFont(Objects.requireNonNull(getClass().getClassLoader().getResource("fonts/software_tester_7.ttf")).toExternalForm(), 10);
 
         this.port.disableProperty().bind(optionsEnabledProperty());
         this.port.textProperty().bindBidirectional(portProperty());
@@ -121,7 +120,6 @@ public class CalculatorController implements Initializable {
         port.setOnKeyReleased(event -> {
             String[] arr = {"portPattern"};
             boolean res = validate(getPort(), arr);
-            /* res = true;*/
             if (res) {
                 port.getStyleClass().removeIf(s -> s.equals(Colors.ERROR.toString()));
             } else {
@@ -135,9 +133,7 @@ public class CalculatorController implements Initializable {
         mainPane.setOnKeyReleased(event -> {
             if (!address.isFocused() && !address.isFocused()) {
                 if (event.getCode().isDigitKey()) {
-                    Button digitButton = buttonsWithKeys.stream().filter((b) -> {
-                        return b.getId().equals("buttonDigit" + Integer.parseInt(event.getText()));
-                    }).findFirst().get();
+                    Button digitButton = buttonsWithKeys.stream().filter((b) -> b.getId().equals("buttonDigit" + Integer.parseInt(event.getText()))).findFirst().get();
                     digitButton.fire();
                 } else {
                     String typedCode = event.getCode().toString();
@@ -181,15 +177,17 @@ public class CalculatorController implements Initializable {
                                Number oldValue,
                                Number newValue) -> {
 
-            setOptionsEnabled((int) newValue != 0);
-            setConnectButtonEnabled((int) newValue != 2);
-            setOperationsEnabled((int) newValue != 1);
+            setOptionsDisabled((int) newValue != 0);
+            setConnectButtonDisabled((int) newValue != 2);
+            setOperationsDisabled((int) newValue != 1);
         });
 
-        operation = new Operation();
-        operationPreview = new Operation();
+        currentOp = new Operation();
         updateStatus(cs.ordinal());
 
+        /**
+         * Create an array of buttons so they can be mass manipulated
+         */
         Button[] buttonArray = {buttonPercentage, buttonCe, buttonC, buttonBkspc, buttonAPowB, buttonXpow2,
                 buttonSqrt, buttonDivide, buttonDigit7, buttonDigit8, buttonDigit9, buttonMultiply, buttonDigit4,
                 buttonDigit5, buttonDigit6, buttonSubstract, buttonDigit1, buttonDigit2, buttonDigit3, buttonAdd,
@@ -198,18 +196,57 @@ public class CalculatorController implements Initializable {
 
         buttonsWithKeys = Arrays.asList(buttonArray);
 
+        /**
+         * Set specific behaviour for each button in the list
+         */
         buttonsWithKeys.forEach((button) -> {
-            button.disableProperty().bind(this.operationsEnabledProperty());
-            //max 25 chars!
+            String tempID = button.getId();
+            String[] memButtons = tempID.split("Mem");
+            if (memButtons.length > 1) {
+                String specificMemButton = memButtons[1].toLowerCase();
+                if (!specificMemButton.equals("store") && !specificMemButton.equals("add") && !specificMemButton.equals("substract")) {
+                    button.disableProperty().bind(this.memoryButtonsDisabledProp().or(this.operationsDisabledProperty()));
+                } else {
+                    button.disableProperty().bind(this.operationsDisabledProperty());
+                }
+            } else {
+                button.disableProperty().bind(this.operationsDisabledProperty());
+            }
+
             button.setOnAction(event -> {
 
+                /**
+                 * Adds an action for each type of button based on its ID
+                 */
                         String buttonID = ((Button) event.getSource()).getId().toLowerCase();
                         if (buttonID.contains("digit")) {
                             String pressed = buttonID.split("digit")[1];
                             digitAction(Integer.parseInt(pressed));
                         } else if (buttonID.contains("mem")) {
                             String pressed = buttonID.split("mem")[1];
-                            System.out.println("Memory command: " + pressed);
+                            switch (pressed) {
+                                case "add": {
+                                    memoryAddAction();
+                                    break;
+                                }
+                                case "substract": {
+                                    memorySubstractAction();
+                                    break;
+                                }
+                                case "store": {
+                                    memoryStoreAction();
+                                    break;
+                                }
+                                case "clear": {
+                                    memoryClearAction();
+                                    break;
+                                }
+                                case "recall": {
+                                    memoryRecallAction();
+                                    break;
+                                }
+                            }
+                            newInput = true;
                         } else {
                             String pressed = buttonID.split("button")[1];
                             System.out.println("Command: " + pressed);
@@ -235,7 +272,7 @@ public class CalculatorController implements Initializable {
                                     break;
                                 }
                                 case "equals": {
-                                    equalsAction();
+                                    processEqualsOperation();
                                     break;
                                 }
                                 default: {
@@ -247,13 +284,17 @@ public class CalculatorController implements Initializable {
             );
         });
 
+        /**
+         * Sets some initial settings for the fields
+         */
+
         port.setFocusTraversable(false);
         address.setFocusTraversable(false);
-        setConnectButtonEnabled(cs.ordinal() != 2);
-        setOperationsEnabled(cs.ordinal() != 1);
+        setConnectButtonDisabled(cs.ordinal() != 2);
+        setOperationsDisabled(cs.ordinal() != 1);
         setIsValidAddress(validate(getAddress(), new String[]{"ipPattern"}));
         setIsValidPort(validate(getPort(), new String[]{"portPattern"}));
-        /*operation.setLocked(true);*/
+        setMemoryButtonsDisabled(true);
     }
 
     @FXML
@@ -297,7 +338,8 @@ public class CalculatorController implements Initializable {
                         protected Void call() throws Exception {
                             c = new ClientToServerConnection(getAddress(), Integer.parseInt(getPort()), default_objectName);
                             opManager = new OperationsManager(c);
-                            operation.setLocked(true);
+                            /*operation.setLocked(true);*/
+                            currentOp.setLocked(true);
                             return null;
                         }
                     };
@@ -331,14 +373,14 @@ public class CalculatorController implements Initializable {
         this.c = null;
     }
 
-    private BooleanProperty connectButtonEnabled() {
-        return this.connectButtonEnabled;
+    private void setConnectButtonDisabled(boolean value) {
+        this.connectButtonDisabled.set(value);
     }
 
-    private void setConnectButtonEnabled(boolean value) {
-        this.connectButtonEnabled.set(value);
-    }
-
+    /**
+     * Updates status based on the passed int. Also updates client status
+     * @param value
+     */
     private void updateStatus(int value) {
         updateToggleButtonStyle(toggleButtonConnect, value);
         this.appStatus.setValue(value);
@@ -385,20 +427,8 @@ public class CalculatorController implements Initializable {
         return this.calcInputTextProp;
     }
 
-    private BooleanProperty portFocusedProperty() {
-        return this.portFocusedProperty;
-    }
-
-    private void setPortFocused(boolean value) {
-        portFocusedProperty.set(value);
-    }
-
     private BooleanProperty isValidAddressProperty() {
         return this.isValidAddressProperty;
-    }
-
-    private boolean getIsValidAddress() {
-        return this.isValidAddressProperty.getValue();
     }
 
     private void setIsValidAddress(boolean value) {
@@ -409,36 +439,24 @@ public class CalculatorController implements Initializable {
         return this.isValidPortProperty;
     }
 
-    private boolean getIsValidPort() {
-        return this.isValidPortProperty.getValue();
-    }
-
     private void setIsValidPort(boolean value) {
         this.isValidPortProperty.set(value);
     }
 
     private BooleanProperty optionsEnabledProperty() {
-        return this.optionsEnabledProperty;
+        return this.optionsDisabledProperty;
     }
 
-    private boolean getOptionsEnabled() {
-        return this.optionsEnabledProperty.get();
+    private void setOptionsDisabled(boolean value) {
+        this.optionsDisabledProperty.set(value);
     }
 
-    private void setOptionsEnabled(boolean value) {
-        this.optionsEnabledProperty.set(value);
+    private BooleanProperty operationsDisabledProperty() {
+        return this.operationsDisabledProperty;
     }
 
-    private BooleanProperty operationsEnabledProperty() {
-        return this.operationsEnabledProperty;
-    }
-
-    private boolean getOperationsEnabled() {
-        return this.operationsEnabledProperty.get();
-    }
-
-    private void setOperationsEnabled(boolean value) {
-        this.operationsEnabledProperty.set(value);
+    private void setOperationsDisabled(boolean value) {
+        this.operationsDisabledProperty.set(value);
     }
 
     private String getCalcInputText() {
@@ -449,22 +467,26 @@ public class CalculatorController implements Initializable {
         this.calcInputTextProp.set(value);
     }
 
-    private void resetCalcInputText() {
-        setCalcInputText("");
+    private BooleanProperty memoryButtonsDisabledProp() {
+        return this.memoryButtonsDisabledProp;
+    }
+
+    private void setMemoryButtonsDisabled(boolean value) {
+        memoryButtonsDisabledProp.set(value);
     }
 
     private void reset(boolean all) {
         if (all) {
-            resultSoFar = 0.0;
-            operation.reset();
-            operationPreview.reset();
-            operation.setX(0.0);
-            operation.setType(OperationTypes.ADD);
-            operationPreview.setX(0.0);
-
-            setCalcInputText("0");
+            newInput = false;
+            try {
+                eagerOp.reset();
+            } catch (NullPointerException ignored) {
+            }
+            try {
+                currentOp.reset();
+            } catch (NullPointerException ignored) {
+            }
         }
-        newInput = true;
         setCalcInputText("0");
     }
 
@@ -476,56 +498,17 @@ public class CalculatorController implements Initializable {
         logScreenTextFlow.getChildren().add(t);
     }
 
-
-    private void equalsAction() {
-        try {
-            if (operation.hasX()) {
-                if (!operation.hasY() || !operation.isLocked()) {
-                    operation.setY(parseInputNumber(getCalcInputText()));
-                    System.out.println(">> " + operation.getName());
-                    if(operation.getName() == null || Objects.equals(operation.getName(), "")) {
-                        operation.setResult(opManager.resolve(tempEagerOperation));
-                    } else {
-                        operation.setResult(opManager.resolve(operation));
-                    }
-
-                    if (operationPreview.getYLabel() == null) {
-                        operationPreview.setYLabel(trimIfPossible(getCalcInputText()));
-                    }
-                    operationPreview.setResult(operation.getResult());
-                } else {
-                    operation.setX(parseInputNumber(getCalcInputText()));
-
-                    operationPreview.setXLabel(trimIfPossible(parseInputNumber(getCalcInputText()).toString()));
-                    if(operation.getName() == null || Objects.equals(operation.getName(), "")) {
-                        operation.setResult(opManager.resolve(tempEagerOperation));
-                    } else {
-                        operation.setResult(opManager.resolve(operation));
-                    }
-                    operationPreview.setResult(operation.getResult());
-                }
-                /*operationPreview.setResult(operation.getResult());*/
-                updateLogScreen(operationPreview.toString(), Colors.NORMAL.toString());
-                setCalcInputText(trimIfPossible(operation.getResult()).toString());
-            }
-            operation.setLocked(true);
-            newInput = true;
-        } catch (RemoteException e) {
-            forceDisconnect();
-        }
-    }
-
     private void digitAction(int a) {
         if (getCalcInputText().length() < 23) {
-            /*       updateCalcInputText(String.valueOf(a));*/
             if (newInput || getCalcInputText().equals("0")) {
                 setCalcInputText(trimNumberIfPossible(a).toString());
             } else {
                 setCalcInputText(trimNumberIfPossible(Double.parseDouble(getCalcInputText() + a)).toString());
             }
-
-            operation.setLocked(false);
-            newInput = false;
+            if (newInput) {
+                currentOp.setResolvable(true);
+                newInput = false;
+            }
         }
     }
 
@@ -589,10 +572,8 @@ public class CalculatorController implements Initializable {
     }
 
     private void changeSignAction() {
-        /*        String result = "";*/
         if (getCalcInputText().length() < 23) {
             double a = Double.parseDouble(getCalcInputText());
-            /*            result = String.valueOf(a * (-1));*/
             setCalcInputText(trimNumberIfPossible(a * -1).toString());
         }
     }
@@ -606,113 +587,102 @@ public class CalculatorController implements Initializable {
     }
 
     private void memoryClearAction() {
-        System.out.println("memoryClearAction not implemented yet");
+        memoryNumber = null;
+        setMemoryButtonsDisabled(true);
     }
 
     private void memoryStoreAction() {
-        System.out.println("memoryStoreAction not implemented yet");
+        memoryNumber = getDoubleFromInput();
+        setMemoryButtonsDisabled(false);
     }
 
     private void memoryAddAction() {
-        System.out.println("memoryAddAction not implemented yet");
+        if (memoryNumber == null) {
+            memoryNumber = 0.0;
+        }
+        memoryNumber = memoryNumber + getDoubleFromInput();
+        setMemoryButtonsDisabled(false);
     }
 
     private void memorySubstractAction() {
-        System.out.println("memorySubstractAction not implemented yet");
+        if (memoryNumber == null) {
+            memoryNumber = 0.0;
+        }
+        memoryNumber = memoryNumber - getDoubleFromInput();
+        setMemoryButtonsDisabled(false);
     }
 
     private void memoryRecallAction() {
-        System.out.println("memoryRecallAction not implemented yet");
-    }
-
-    private void combinationsAction() {
-        System.out.println("combinationsAction not implemented yet");
-    }
-
-
-
-    private void updateCalcInputText(String s) {
-        String actualContent = getCalcInputText();
-        if (actualContent.equals("")) setCalcInputText(s);
-        else
-            try {
-                Double result = Double.parseDouble(actualContent);
-                if (actualContent.equals("0")) {
-                    setCalcInputText(s);
-                } else {
-                    setCalcInputText(actualContent + s);
-                }
-            } catch (NumberFormatException nfe) {
-                System.out.println("Could not parse that number");
-            }
+        if (memoryNumber != null) {
+            System.out.println(memoryNumber);
+            setCalcInputText(trimIfPossible(memoryNumber).toString());
+        }
     }
 
     private void makeOperation(OperationTypes opType) {
+        if (opType.getName().equals("none")) return;
         try {
-            if (!opType.isEager()) {
-                if (!operation.isLocked() && operation.hasX()) {
-                    operation.setY(parseInputNumber(getCalcInputText()));
-                    operation.setYLabel(trimNumberIfPossible(parseInputNumber(getCalcInputText())).toString());
-                    Double result = opManager.resolve(operation);
-                    operation.setResult(result);
-                    updateCustomLogScreen(logScreenTextFlow, operation.toString(), null);
-                    operationPreview.reset();
-                    operationPreview.setXLabel(operation.getResultLabel());
-                    resultSoFar = operation.getResult();
-                } else {
-                    operation.setX(parseInputNumber(getCalcInputText()));
-                    operation.setXLabel(trimIfPossible(parseInputNumber(getCalcInputText())).toString());
-                    if (operation.hasResult()) {
-                        operationPreview.reset();
-                    }
-                    operationPreview.setY(null);
-                    operationPreview.setYLabel(null);
-                    operationPreview.setXLabel(trimIfPossible(operationPreview.getXLabel() != null ? operationPreview.getXLabel() : operation.getX().toString()));
-                    resultSoFar = operation.getX();
-                }
-                operation.setX(resultSoFar);
-                operation.setY(null);
-                operation.setXLabel(trimIfPossible(resultSoFar).toString());
-                operation.setLocked(true);
-                operation.setType(opType);
-                operationPreview.setType(opType);
-
+            if (opType.isEager()) {
+                eagerOp = new Operation();
+                eagerOp.setX(getDoubleFromInput());
+                eagerOp.setType(opType);
+                eagerOp.setXLabel(opType.getCustomLabel(new String[]{trimIfPossible(eagerOp.getX()).toString()}));
+                eagerOp.setResult(opManager.resolve(eagerOp));
+                updateCustomLogScreen(logScreenTextFlow, eagerOp.toString(), new ArrayList<>());
+                setCalcInputText(eagerOp.getResultLabel());
             } else {
-                System.out.println("Eager operation");
-                tempEagerOperation = new Operation();
-                tempEagerOperation.setX(parseInputNumber(getCalcInputText()));
-
-                tempEagerOperation.setType(opType);
-                tempEagerOperation.setResult(opManager.resolve(tempEagerOperation));
-                tempEagerOperation.setXLabel(tempEagerOperation.getType().getCustomLabel(trimIfPossible(tempEagerOperation.getX()).toString().split(" ")));
-                if (!operation.hasX()) {
-                    System.out.println("B1");
-                    operationPreview.setXLabel(tempEagerOperation.getXLabel());
-                    operationPreview.setX(tempEagerOperation.getResult());
-                    operation.setX(tempEagerOperation.getResult());
-                    operation.setLocked(true);
+                if (currentOp.isResolvable()) {
+                    currentOp.setY(getDoubleFromInput());
+                    currentOp.setResult(opManager.resolve(currentOp));
+                    updateCustomLogScreen(logScreenTextFlow, currentOp.toString(), new ArrayList<>());
+                    setCalcInputText(currentOp.getResultLabel());
+                    currentOp.setX(currentOp.getResult());
+                    currentOp.setY(null);
+                    currentOp.setResolvable(false);
                 } else {
-                    System.out.println("B2");
-                    operationPreview.setYLabel(tempEagerOperation.getXLabel());
-                    operation.setY(tempEagerOperation.getResult());
+                    currentOp.setX(getDoubleFromInput());
+                    currentOp.setY(null);
                 }
-                updateCustomLogScreen(logScreenTextFlow, tempEagerOperation.toString(), null);
-                resultSoFar = tempEagerOperation.getResult();
+                currentOp.setType(opType);
             }
-
             newInput = true;
-            setCalcInputText(trimNumberIfPossible(resultSoFar).toString());
-        } catch (RemoteException re) {
+        } catch (RemoteException e) {
             forceDisconnect();
         }
     }
 
+    public void processEqualsOperation() {
+        try {
+            if (!currentOp.hasType() || currentOp.isEager()) {
+                return;
+            }
+            if (!currentOp.hasY()) {
+                currentOp.setY(getDoubleFromInput());
+            } else {
+                currentOp.setX(getDoubleFromInput());
+            }
+            currentOp.setResult(opManager.resolve(currentOp));
+            currentOp.setResolvable(false);
+            updateCustomLogScreen(logScreenTextFlow, currentOp.toString(), new ArrayList<>());
+            setCalcInputText(currentOp.getResultLabel());
+        } catch (RemoteException e) {
+            forceDisconnect();
+        }
+    }
+
+    /**
+     *  Forces a click on the ConnectToggle button to unselect it thus to disconnect
+     */
     private void forceDisconnect() {
         System.err.println("Connection lost. Please reconnect.");
         updateLogScreen("Connection lost. Please reconnect.", Colors.ERROR.toString());
         if (toggleButtonConnect.isSelected()) {
             toggleButtonConnect.fire();
         }
+    }
+
+    private Double getDoubleFromInput() {
+        return parseInputNumber(getCalcInputText());
     }
 }
 

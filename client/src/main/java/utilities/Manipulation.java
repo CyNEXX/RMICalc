@@ -5,7 +5,6 @@ import static utilities.Validation.validate;
 public class Manipulation {
     public static Number trimNumberIfPossible(Number nr) {
         String s = nr.toString();
-        System.out.println("? " + s);
         boolean isSimpleInt = validate(s, new String[]{"simpleInt"});
         if (isSimpleInt) {
             return nr.intValue();
@@ -40,5 +39,9 @@ public class Manipulation {
         } else {
             return nr;
         }
+    }
+
+    public static String trimAndString(Number n) {
+        return n != null ? trimNumberIfPossible(n).toString() : "";
     }
 }

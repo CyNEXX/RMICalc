@@ -42,7 +42,6 @@ public class LogScreenController {
     }
 
     public static void updateCustomLogScreen(TextFlow t, String s, List<String[]> aS) {
-        System.out.println("Custom display");
         String[] tokens = s.split(" ");
         updateScreenWithStyle(t, tokens, aS);
     }
