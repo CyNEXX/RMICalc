@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.TextFlow?>
+
+<Pane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="875.0" prefWidth="500.0" styleClass="mainClass" stylesheets="@/css/calculator.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.CalculatorController">
+    <children>
+        <GridPane prefHeight="875.0" prefWidth="500.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="277.0" minHeight="10.0" prefHeight="232.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="436.0" minHeight="0.0" prefHeight="58.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="611.0" minHeight="10.0" prefHeight="554.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <GridPane GridPane.rowIndex="1">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Button fx:id="buttonMemClear" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="MC" />
+                        <Button fx:id="buttonMemRecall" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="MR" GridPane.columnIndex="1" />
+                        <Button fx:id="buttonMemAdd" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="M+" GridPane.columnIndex="2" />
+                        <Button fx:id="buttonMemSubstract" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="M-" GridPane.columnIndex="3" />
+                        <Button fx:id="buttonMemStore" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="MS" GridPane.columnIndex="4" />
+                        <Button fx:id="buttonCnk" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="Cnk" GridPane.columnIndex="5" />
+                        <Button fx:id="buttonNFact" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-18" text="n!" GridPane.columnIndex="6" />
+                    </children>
+                </GridPane>
+                <GridPane styleClass="zone-2" GridPane.rowIndex="2">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Button fx:id="buttonPercentage" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="\%" />
+                        <Button fx:id="buttonCe" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="CE" GridPane.columnIndex="1" />
+                        <Button fx:id="buttonC" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="C" GridPane.columnIndex="2" />
+                        <Button fx:id="buttonBkspc" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="◄" GridPane.columnIndex="3" />
+                        <Button fx:id="buttonAPowB" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="xⁿ" GridPane.rowIndex="1" />
+                        <Button fx:id="buttonXpow2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="x²" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Button fx:id="buttonSqrt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="√x" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Button fx:id="buttonDivide" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="÷" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Button fx:id="buttonDigit7" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="7" GridPane.rowIndex="2" />
+                        <Button fx:id="buttonDigit8" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="8" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Button fx:id="buttonDigit9" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="9" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <Button fx:id="buttonMultiply" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="*" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <Button fx:id="buttonDigit4" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="4" GridPane.rowIndex="3" />
+                        <Button fx:id="buttonDigit5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="5" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Button fx:id="buttonDigit6" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="6" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                        <Button fx:id="buttonSubstract" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="-" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <Button fx:id="buttonDigit1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="1" GridPane.rowIndex="4" />
+                        <Button fx:id="buttonDigit2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="2" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Button fx:id="buttonDigit3" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="3" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <Button fx:id="buttonAdd" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="+" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                        <Button fx:id="buttonChangeSign" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="- / +" GridPane.rowIndex="5" />
+                        <Button fx:id="buttonDigit0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Button fx:id="buttonDot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="." GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                        <Button fx:id="buttonEquals" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="default-button, fs-30" text="=" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                    </children>
+                </GridPane>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <GridPane styleClass="grid-head">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="306.0" minWidth="10.0" percentWidth="60.0" prefWidth="306.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="0.0" percentWidth="10.0" prefWidth="0.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <TextField fx:id="port" prefHeight="200.0" prefWidth="200.0" promptText="port" styleClass="centered-text-inputs" GridPane.columnIndex="1" />
+                                <TextField fx:id="address" prefHeight="200.0" prefWidth="200.0" promptText="address" styleClass="centered-text-inputs" />
+                                <ToggleButton fx:id="toggleButtonConnect" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleToggleConnect" styleClass="button-connect" GridPane.columnIndex="2" />
+                            </children>
+                        </GridPane>
+                  <VBox GridPane.rowIndex="1" styleClass="scrollContainerStyle">
+                     <children>
+                              <ScrollPane fx:id="scrollableContent" prefViewportHeight="145.0" prefViewportWidth="500.0" styleClass="scrollableContentStyle" GridPane.rowIndex="1">
+                                  <content>
+                                      <TextFlow fx:id="logScreenTextFlow" prefHeight="200.0" prefWidth="200.0" styleClass="ta-display" textAlignment="RIGHT" GridPane.rowIndex="1" />
+                                  </content>
+                              </ScrollPane>
+                     </children>
+                  </VBox>
+                        <TextField fx:id="calcInput" prefHeight="153.0" prefWidth="500.0" styleClass="tf-digitinput" GridPane.rowIndex="2" />
+                    </children>
+                </GridPane>
+            </children>
+        </GridPane>
+    </children>
+</Pane>

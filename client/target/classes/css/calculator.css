@@ -1,0 +1,234 @@
+.mainClass{
+    -fx-font-family: Arial;
+    -fx---darkcolor :#7491AD;
+    -fx---lightcolor: #96ADC8;
+    -fx---bkcolor: #FFFCFF;
+    -fx---focusrowcolor: #F2F8FF;
+    -fx---evenrowcolor: #FFFCFF;
+    -fx---unevenrowcolor: #F2F8FF;
+    -fx--redcolor: #894A4A;
+    -fx---fillcolor: #4D4D4D;
+    -fx---darkercolor: #BEC8CE;
+    -fx---bluishcolor: #D0E2ED;
+    -fx---other_font_color: #2E556D;
+    -fx--other_dark_color: #51626d;
+    -fx--shadecolor: #424242;
+    -fx---darkerredcolor: #544747;
+    -fx--color-white: #ffffff;
+/*    -fx-text-fill: -fx---fillcolor;*/
+    -fx-color-orange: #f56f42;
+    -fx-light-hover-gradient: linear-gradient(rgba(255, 255, 255, 0.1) 5%, rgba(255, 255, 255, 0.05)  20%, rgba(127, 127, 127, 0.01) 100%);
+
+    -fx--color-electric-blue: rgb(0, 213, 255);
+    -fx-color-almost-black: #0f0f0f;
+    -fx-color-yellow: #f2ee7c;
+/*    -fx-gradient-liniar: linear-gradient(45deg, #0099CE 0%, #0C2F46 50%, #0099CE 100%);*/
+
+}
+
+.default-button {
+        -fx-margin: 0;
+        -fx-padding: 0;
+        -fx-border: none;
+        -fx-background-color: transparent;
+        -fx-font-family: "Software Tester 7";
+        -fx-text-fill: -fx--color-electric-blue;
+}
+.default-button:hover {
+        -fx-text-fill: -fx--color-white;
+        -fx-background-color: -fx-light-hover-gradient;
+       /* -fx-blend-mode: overlay;*/
+}
+
+.centered-text-inputs {
+    -fx-alignment: center;
+    -fx-font-family: "Software Tester 7";
+    -fx-font-size: 18;
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx--color-electric-blue;
+}
+
+.fs-30 {
+    -fx-font-size: 30;
+}
+
+.fs-18 {
+    -fx-font-size: 18;
+}
+
+.mainClass {
+    -fx-text-fill: -fx--color-electric-blue;
+    -fx-background-color: linear-gradient(to top left, #0099CE, #0C2F46);
+}
+
+
+
+.ta-display {
+    -fx-font-family: "Software Tester 7";
+    -fx-background-insets: 0;
+    -fx-background-color: -fx-color-almost-black;
+    -fx-text-fill: -fx--color-electric-blue;
+    -fx-font-size: 12;
+}
+
+.ta-display .content {
+    -fx-background-color: -fx-color-almost-black;
+    -fx-text-fill: -fx--color-electric-blue;
+
+}
+
+.ta-display:focused .content {
+    -fx-background-color: -fx-color-almost-black;
+}
+
+.ta-display:focused {
+    -fx-highlight-fill: -fx-color-almost-black;
+}
+
+.ta-display .content {
+    -fx-text-fill: -fx--color-electric-blue;
+    -fx-highlight-fill: -fx-color-almost-black;
+}
+
+.ta-display *.text {
+    -fx-text-alignment: right;
+}
+
+.button-connect {
+    -fx-background-color: transparent;
+    -fx-font-size: 20;
+}
+
+.button-connect:disabled {
+    -fx-opacity: 1.0;
+    /*-fx-font-size: 10;*/
+/*    -fx-content: "?";*/
+    -fx-text-fill: -fx--shadecolor;
+}
+
+.grid-head {
+    -fx-background-color: -fx-color-almost-black;
+}
+
+.interaction-disabled {
+    -fx-text-fill: -fx-color-yellow;
+}
+
+.normal-text{
+    -fx-fill: -fx--color-electric-blue;
+    -fx-text-fill: -fx--color-electric-blue;
+/*    -fx-alignment: center-right;
+    -fx-text-alignment: right;*/
+
+}
+
+.warning-text {
+    -fx-fill: -fx-color-yellow;
+    -fx-text-fill: -fx-color-yellow;
+/*    -fx-alignment: center-right;
+    -fx-text-alignment: right;*/
+
+}
+
+.error-text {
+     -fx-fill: -fx-color-orange;
+     -fx-text-fill: -fx-color-orange;
+/*     -fx-alignment: center-right;
+     -fx-text-alignment: right;*/
+
+}
+
+.tf-digitinput, .tf-digitinput .content {
+    -fx-background-color: -fx-color-almost-black;
+    -fx-text-fill: -fx--color-electric-blue;
+    -fx-alignment: center-right;
+    -fx-font-size: 30;
+    -fx-font-family: "Software Tester 7";
+    -fx-cursor: default;
+}
+
+.ta-display {
+    /*-fx-padding: 10px;*/
+    -fx-fit-to-height: true;
+    -fx-fit-to-width: true;
+}
+
+.ta-display > * {
+    -fx-font-size: 14;
+    -fx-alignment: center-right;
+    -fx-text-alignment: right;
+    -fx-font-family: "Monospace";
+}
+
+.scrollableContentStyle {
+    -fx-background-insets: 0;
+    -fx-background-color: -fx-color-almost-black;
+    -fx-text-fill: -fx--color-electric-blue;
+    -fx-font-size: 14;
+    -fx-fit-to-height: true;
+    -fx-fit-to-width: true;
+    -fx-padding: 0 10px 0 10px;
+}
+
+.scrollContainerStyle {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-color-almost-black;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color: -fx-color-almost-black;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0.0em;
+    -fx-border-radius: 1.0em;
+    -fx-pref-width: 2;
+}
+
+
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color: -fx-color-almost-black;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 8.0 0.0;
+
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: -fx-color-almost-black;
+    -fx-background-radius : 0.0em;
+    -fx-padding: 0.0 8.0 0.0 0.0;
+-fx-background-color: red;
+}
+
+ .scroll-bar .increment-arrow,
+ .scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding: 0.15em 0.0;
+}
+
+ .scroll-bar:vertical .increment-arrow,
+ .scroll-bar:vertical .decrement-arrow{
+ -fx-background-color: -fx--shadecolor;
+    -fx-shape: " ";
+    -fx-padding: 0.0 0.15em;
+    -fx-pref-width: 1px;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: -fx--shadecolor;
+    -fx-background-insets: 2.0, 0.0, 0.0;
+    -fx-background-radius: 1.0em;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: -fx--color-electric-blue;
+    -fx-background-insets: 2.0, 0.0, 0.0;
+    -fx-background-radius: 1.0em;
+}
+
+
+
+
