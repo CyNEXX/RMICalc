@@ -6,6 +6,9 @@ import model.Operation;
 
 import java.rmi.RemoteException;
 
+/**
+ *  Manages the relation between operations and the calls done to the server in order to get a result for them
+ */
 public class OperationsManager {
 
     private ClientToServerConnection conn;
@@ -14,6 +17,12 @@ public class OperationsManager {
         this.conn = conn;
     }
 
+    /**
+     * Returns the result of the computation as Double
+     * @param operation The operation that needs to be calculated
+     * @return the calculation result as Double
+     * @throws RemoteException
+     */
     public Double resolve(Operation operation) throws RemoteException {
         System.out.println("Getting result of..." + operation.toString());
         if (!operation.isEager()) {

@@ -2,7 +2,7 @@ package controllers;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import model.Operation;
+import utilities.Colors;
 
 import java.util.Arrays;
 import java.util.List;

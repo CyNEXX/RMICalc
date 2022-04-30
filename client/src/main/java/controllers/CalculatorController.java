@@ -18,19 +18,21 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import model.ClientStatuses;
 import model.Operation;
 import model.OperationTypes;
 import repository.OperationsManager;
 import connection.ClientToServerConnection;
 
-import static controllers.ClientStatuses.*;
+import static model.ClientStatuses.*;
 import static utilities.Validation.validate;
 import static controllers.LogScreenController.updateCustomLogScreen;
 
 
 import static utilities.Manipulation.*;
+import utilities.Colors;
 
-enum Colors {
+/*enum Colors {
     NORMAL("normal-text"), WARNING("warning-text"), ERROR("error-text"), SYSTEM("warning-text");
 
     private final String colorName;
@@ -43,7 +45,7 @@ enum Colors {
     public String toString() {
         return colorName;
     }
-}
+}*/
 
 public class CalculatorController implements Initializable {
 
@@ -330,10 +332,9 @@ public class CalculatorController implements Initializable {
     private void handleToggleConnect() {
         updateStatus(2);
         if (toggleButtonConnect.isSelected()) {
-            updateCustomLogScreen(logScreenTextFlow, "Connecting...", new ArrayList<>());
-            /**
-             * Create a background task in order to update the UI from a parallel thread when completed
-             */
+            updateCustomLogScreen(logScreenTextFlow, "Connecting...", Arrays.asList(new String[][]{new String[]{Colors.SYSTEM.toString()}}));
+
+            /*              Create a background task in order to update the UI from a parallel thread when completed             */
             backgroundTask = new Service<Void>() {
                 @Override
                 protected Task<Void> createTask() {
@@ -347,14 +348,14 @@ public class CalculatorController implements Initializable {
                     };
                 }
             };
-            /**
-             * If success, update status  and logScreen
-             */
+
+            /*              If success,  update logScreen and update status        */
             backgroundTask.setOnSucceeded(event -> {
+                updateCustomLogScreen(logScreenTextFlow, "Connected", Arrays.asList(new String[][]{new String[]{Colors.SYSTEM.toString()}}));
                 updateStatus(1);
-                updateCustomLogScreen(logScreenTextFlow, "Connected", new ArrayList<>());
             });
 
+            /*              If failed,  update logScreen, update status  and  fire disconnect button if it's in selected state       */
             backgroundTask.setOnFailed(event -> {
                 updateCustomLogScreen(logScreenTextFlow, "Failed to connect. Check IP, port and if server is online", Arrays.asList(new String[][]{new String[]{Colors.ERROR.toString()}}));
                 updateStatus(0);
@@ -367,7 +368,7 @@ public class CalculatorController implements Initializable {
             } catch (NullPointerException ignored) {
             } finally {
                 updateStatus(0);
-                updateCustomLogScreen(logScreenTextFlow, "Failed to connect. Check IP, port and if server is online", Arrays.asList(new String[][]{new String[]{Colors.SYSTEM.toString()}}));
+                updateCustomLogScreen(logScreenTextFlow, "Disconnected.", Arrays.asList(new String[][]{new String[]{Colors.SYSTEM.toString()}}));
             }
         }
     }
@@ -498,6 +499,7 @@ public class CalculatorController implements Initializable {
 
     /**
      * Adds a digit based on input
+     *
      * @param a the digit to be entered
      */
     private void digitAction(int a) {
@@ -515,6 +517,7 @@ public class CalculatorController implements Initializable {
 
     /**
      * Decides what operation to run based on passed string.
+     *
      * @param type the string representing the type
      */
     private void operationAction(String type) {
@@ -726,6 +729,7 @@ public class CalculatorController implements Initializable {
 
     /**
      * A shorthand to get the Double value from the input
+     *
      * @return
      */
     private Double getDoubleFromInput() {
