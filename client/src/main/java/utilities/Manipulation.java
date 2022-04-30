@@ -2,6 +2,9 @@ package utilities;
 
 import static utilities.Validation.validate;
 
+/**
+ * Different variable manipulations
+ */
 public class Manipulation {
     public static Number trimNumberIfPossible(Number nr) {
         String s = nr.toString();

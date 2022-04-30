@@ -13,7 +13,15 @@ public class ClientToServerConnection {
     int port;
     CalculatorInterface ci;
 
-
+    /**
+     * Creates the connection to the remote object
+     * @param address The address to connect
+     * @param port The port to connect through
+     * @param name The name of the remote object
+     * @throws MalformedURLException
+     * @throws NotBoundException
+     * @throws RemoteException
+     */
     public ClientToServerConnection(String address, int port, String name) throws MalformedURLException, NotBoundException, RemoteException {
         this.address = address;
         this.port = port;
@@ -25,6 +33,10 @@ public class ClientToServerConnection {
     public void close() {
     }
 
+    /**
+     * Exposes the remote object interface
+     * @return The interface that's used to access server operations
+     */
     public CalculatorInterface getServerOperations() {
         return ci;
     }

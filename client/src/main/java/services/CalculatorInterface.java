@@ -3,6 +3,9 @@ package services;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * The interface that's also used in the remote object (where it is also implemented)
+ */
 public interface CalculatorInterface extends Remote {
     double add(double a, double b) throws RemoteException;
 

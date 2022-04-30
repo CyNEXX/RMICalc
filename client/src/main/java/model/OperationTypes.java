@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * Operation types as enum with their characteristics
+ */
 public enum OperationTypes {
     NONE(0), ADD(1), SUBSTRACT(2), MULTIPLY(3), DIVIDE(4), POW2(5), A_POW_B(6), SQRT(7), N_FACT(8), COMB_N_OF_K(9), PERCENTAGE(10);
 
@@ -96,8 +99,15 @@ public enum OperationTypes {
         return eager;
     }
 
+    public boolean isOperation() {
+        return this.type != 0;
+    }
+
     public String getCustomLabel(String[] textValues) {
         switch (this.type) {
+            case 5: {
+                return textValues[0].concat("²");
+            }
             case 6: {
                 return textValues[0].concat("+").concat(textValues[1]);
             }

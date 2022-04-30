@@ -1,5 +1,8 @@
 package controllers;
 
+/**
+ * Client statuses
+ */
 public enum ClientStatuses {
     OFFLINE, ONLINE, CONNECTING;
 

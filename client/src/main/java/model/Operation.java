@@ -1,10 +1,10 @@
 package model;
 
-import java.util.Locale;
-
-import static utilities.Validation.validate;
 import static utilities.Manipulation.*;
 
+/**
+ * The Operation Class model
+ */
 public class Operation {
 
     private Double x;
@@ -13,18 +13,10 @@ public class Operation {
     private String xLabel;
     private String yLabel;
     private String resultLabel;
-    private boolean locked;
-
-    private boolean unstartedOperation = true;
     private OperationTypes type;
-
 
     public Operation() {
         this.type = OperationTypes.values()[0];
-    }
-
-    public Operation(Integer type) {
-        this.type = OperationTypes.values()[type + 1];
     }
 
     public Double getX() {
@@ -45,22 +37,6 @@ public class Operation {
         this.yLabel = trimAndString(y);
     }
 
-    public String getSign() {
-        return type.getSign();
-    }
-
-    public String getName() {
-        return type.getName();
-    }
-
-    public boolean isUnstartedOperation() {
-        return unstartedOperation;
-    }
-
-    public void setUnstartedOperation(boolean unstartedOperation) {
-        this.unstartedOperation = unstartedOperation;
-    }
-
     public String getXLabel() {
         return xLabel;
     }
@@ -73,20 +49,8 @@ public class Operation {
         return yLabel;
     }
 
-    public void setYLabel(String yLabel) {
-        this.yLabel = yLabel;
-    }
-
     public String getResultLabel() {
         return resultLabel;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
     }
 
     public void setType(OperationTypes opType) {
@@ -109,18 +73,6 @@ public class Operation {
         return y != null;
     }
 
-    public boolean hasResult() {
-        return result != null;
-    }
-
-    public boolean isResolvable() {
-        return !locked;
-    }
-
-    public void setResolvable(boolean value) {
-        locked = !value;
-    }
-
     public void setResult(Double result) {
         this.result = result;
         this.resultLabel = trimAndString(result);
@@ -137,7 +89,6 @@ public class Operation {
         this.xLabel = null;
         this.yLabel = null;
         this.result = null;
-        this.locked = true;
     }
 
     public boolean hasType() {

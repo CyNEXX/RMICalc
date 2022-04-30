@@ -15,9 +15,9 @@ public class OperationsManager {
     }
 
     public Double resolve(Operation operation) throws RemoteException {
+        System.out.println("Getting result of..." + operation.toString());
         if (!operation.isEager()) {
             if (operation.hasX() && operation.hasY() && !(operation.getType().getName().equals("none"))) {
-
                 switch (operation.getType().getName()) {
                     case "add": {
                         return conn.getServerOperations().add(operation.getX(), operation.getY());

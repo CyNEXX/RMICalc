@@ -12,6 +12,9 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
+/**
+ * The class that contains the loader for the FXML and sets the stage;
+ */
 public class UILauncher extends Application {
 
     @Override

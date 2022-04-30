@@ -12,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.net.URL;
@@ -67,7 +66,7 @@ public class CalculatorController implements Initializable {
 
     private final BooleanProperty memoryButtonsDisabledProp = new SimpleBooleanProperty();
     private final BooleanProperty connectButtonDisabled = new SimpleBooleanProperty();
-    private final BooleanProperty portFocusedProperty = new SimpleBooleanProperty();
+
 
     private static boolean newInput = false;
     private static List<Button> buttonsWithKeys;
@@ -186,7 +185,7 @@ public class CalculatorController implements Initializable {
         updateStatus(cs.ordinal());
 
         /**
-         * Create an array of buttons so they can be mass manipulated
+         * Creates an array of buttons, so they can be mass manipulated
          */
         Button[] buttonArray = {buttonPercentage, buttonCe, buttonC, buttonBkspc, buttonAPowB, buttonXpow2,
                 buttonSqrt, buttonDivide, buttonDigit7, buttonDigit8, buttonDigit9, buttonMultiply, buttonDigit4,
@@ -197,7 +196,7 @@ public class CalculatorController implements Initializable {
         buttonsWithKeys = Arrays.asList(buttonArray);
 
         /**
-         * Set specific behaviour for each button in the list
+         * Sets specific behaviour for each button in the list
          */
         buttonsWithKeys.forEach((button) -> {
             String tempID = button.getId();
@@ -215,9 +214,9 @@ public class CalculatorController implements Initializable {
 
             button.setOnAction(event -> {
 
-                /**
-                 * Adds an action for each type of button based on its ID
-                 */
+                        /**
+                         * Adds an action for each type of button based on its ID
+                         */
                         String buttonID = ((Button) event.getSource()).getId().toLowerCase();
                         if (buttonID.contains("digit")) {
                             String pressed = buttonID.split("digit")[1];
@@ -249,7 +248,6 @@ public class CalculatorController implements Initializable {
                             newInput = true;
                         } else {
                             String pressed = buttonID.split("button")[1];
-                            System.out.println("Command: " + pressed);
                             switch (pressed) {
                                 case "dot": {
                                     decimalAction();
@@ -272,7 +270,7 @@ public class CalculatorController implements Initializable {
                                     break;
                                 }
                                 case "equals": {
-                                    processEqualsOperation();
+                                    equalsAction();
                                     break;
                                 }
                                 default: {
@@ -325,11 +323,17 @@ public class CalculatorController implements Initializable {
     @FXML
     private Pane mainPane;
 
+    /**
+     * Handles connect button toggle action
+     */
     @FXML
     private void handleToggleConnect() {
         updateStatus(2);
         if (toggleButtonConnect.isSelected()) {
-            updateLogScreen("Connecting...", Colors.SYSTEM.toString());
+            updateCustomLogScreen(logScreenTextFlow, "Connecting...", new ArrayList<>());
+            /**
+             * Create a background task in order to update the UI from a parallel thread when completed
+             */
             backgroundTask = new Service<Void>() {
                 @Override
                 protected Task<Void> createTask() {
@@ -338,20 +342,21 @@ public class CalculatorController implements Initializable {
                         protected Void call() throws Exception {
                             c = new ClientToServerConnection(getAddress(), Integer.parseInt(getPort()), default_objectName);
                             opManager = new OperationsManager(c);
-                            /*operation.setLocked(true);*/
-                            currentOp.setLocked(true);
                             return null;
                         }
                     };
                 }
             };
+            /**
+             * If success, update status  and logScreen
+             */
             backgroundTask.setOnSucceeded(event -> {
                 updateStatus(1);
-                updateLogScreen("Connected!", Colors.SYSTEM.toString());
+                updateCustomLogScreen(logScreenTextFlow, "Connected", new ArrayList<>());
             });
 
             backgroundTask.setOnFailed(event -> {
-                updateLogScreen("Failed to connect. Check IP, port and if server is online", Colors.ERROR.toString());
+                updateCustomLogScreen(logScreenTextFlow, "Failed to connect. Check IP, port and if server is online", Arrays.asList(new String[][]{new String[]{Colors.ERROR.toString()}}));
                 updateStatus(0);
                 toggleButtonConnect.setSelected(false);
             });
@@ -362,7 +367,7 @@ public class CalculatorController implements Initializable {
             } catch (NullPointerException ignored) {
             } finally {
                 updateStatus(0);
-                updateLogScreen("Disconnected", Colors.SYSTEM.toString());
+                updateCustomLogScreen(logScreenTextFlow, "Failed to connect. Check IP, port and if server is online", Arrays.asList(new String[][]{new String[]{Colors.SYSTEM.toString()}}));
             }
         }
     }
@@ -379,7 +384,8 @@ public class CalculatorController implements Initializable {
 
     /**
      * Updates status based on the passed int. Also updates client status
-     * @param value
+     *
+     * @param value the clientStatuus type as int
      */
     private void updateStatus(int value) {
         updateToggleButtonStyle(toggleButtonConnect, value);
@@ -490,14 +496,10 @@ public class CalculatorController implements Initializable {
         setCalcInputText("0");
     }
 
-    private void updateLogScreen(String appendedText, String style) {
-        Text t = new Text(appendedText + "\n");
-        if (style != null && !style.equals("")) {
-            t.getStyleClass().add(style);
-        } else t.getStyleClass().add(Colors.NORMAL.toString());
-        logScreenTextFlow.getChildren().add(t);
-    }
-
+    /**
+     * Adds a digit based on input
+     * @param a the digit to be entered
+     */
     private void digitAction(int a) {
         if (getCalcInputText().length() < 23) {
             if (newInput || getCalcInputText().equals("0")) {
@@ -506,12 +508,15 @@ public class CalculatorController implements Initializable {
                 setCalcInputText(trimNumberIfPossible(Double.parseDouble(getCalcInputText() + a)).toString());
             }
             if (newInput) {
-                currentOp.setResolvable(true);
                 newInput = false;
             }
         }
     }
 
+    /**
+     * Decides what operation to run based on passed string.
+     * @param type the string representing the type
+     */
     private void operationAction(String type) {
         switch (type) {
             case "add": {
@@ -557,11 +562,17 @@ public class CalculatorController implements Initializable {
         }
     }
 
+    /**
+     * Adds a decimal if possible
+     */
     private void decimalAction() {
         if (validate(getCalcInputText(), new String[]{"noPeriod"}))
             setCalcInputText(getCalcInputText() + ".");
     }
 
+    /**
+     * Removes the last character from the input
+     */
     private void backSpaceAction() {
         String currentContent = getCalcInputText();
         if (currentContent.length() == 1) {
@@ -571,6 +582,9 @@ public class CalculatorController implements Initializable {
         }
     }
 
+    /**
+     * Changes the operation sign
+     */
     private void changeSignAction() {
         if (getCalcInputText().length() < 23) {
             double a = Double.parseDouble(getCalcInputText());
@@ -578,24 +592,39 @@ public class CalculatorController implements Initializable {
         }
     }
 
+    /**
+     * Calls reset with false param meaning only the input will be cleared
+     */
     private void clearEntryAction() {
         reset(false);
     }
 
+    /**
+     * Calls reset with true param meaning that any operation and input will be returned to the original state
+     */
     private void clearAllAction() {
         reset(true);
     }
 
+    /**
+     * Clears the number saved in memory
+     */
     private void memoryClearAction() {
         memoryNumber = null;
         setMemoryButtonsDisabled(true);
     }
 
+    /**
+     * Store the displayed number in the memory
+     */
     private void memoryStoreAction() {
         memoryNumber = getDoubleFromInput();
         setMemoryButtonsDisabled(false);
     }
 
+    /**
+     * Adds the displayed number to the existing one in memory
+     */
     private void memoryAddAction() {
         if (memoryNumber == null) {
             memoryNumber = 0.0;
@@ -604,6 +633,9 @@ public class CalculatorController implements Initializable {
         setMemoryButtonsDisabled(false);
     }
 
+    /**
+     * Substracts the displayed number from the one in memory
+     */
     private void memorySubstractAction() {
         if (memoryNumber == null) {
             memoryNumber = 0.0;
@@ -612,35 +644,44 @@ public class CalculatorController implements Initializable {
         setMemoryButtonsDisabled(false);
     }
 
+    /**
+     * Replaces the input with the number stored in memory
+     */
     private void memoryRecallAction() {
         if (memoryNumber != null) {
-            System.out.println(memoryNumber);
             setCalcInputText(trimIfPossible(memoryNumber).toString());
         }
     }
 
+    /**
+     * Closes any existing operation and updates the operation type (and sign)
+     *
+     * @param opType the new operation type
+     */
     private void makeOperation(OperationTypes opType) {
-        if (opType.getName().equals("none")) return;
+        if (!opType.isOperation()) return;
         try {
             if (opType.isEager()) {
                 eagerOp = new Operation();
                 eagerOp.setX(getDoubleFromInput());
+                eagerOp.setType(opType);
                 eagerOp.setType(opType);
                 eagerOp.setXLabel(opType.getCustomLabel(new String[]{trimIfPossible(eagerOp.getX()).toString()}));
                 eagerOp.setResult(opManager.resolve(eagerOp));
                 updateCustomLogScreen(logScreenTextFlow, eagerOp.toString(), new ArrayList<>());
                 setCalcInputText(eagerOp.getResultLabel());
             } else {
-                if (currentOp.isResolvable()) {
+                if (!currentOp.hasX()) {
+                    currentOp.setX(getDoubleFromInput());
+                } else if (!currentOp.hasY() && !newInput) {
                     currentOp.setY(getDoubleFromInput());
                     currentOp.setResult(opManager.resolve(currentOp));
                     updateCustomLogScreen(logScreenTextFlow, currentOp.toString(), new ArrayList<>());
                     setCalcInputText(currentOp.getResultLabel());
                     currentOp.setX(currentOp.getResult());
                     currentOp.setY(null);
-                    currentOp.setResolvable(false);
                 } else {
-                    currentOp.setX(getDoubleFromInput());
+                    currentOp.setX(currentOp.getResult());
                     currentOp.setY(null);
                 }
                 currentOp.setType(opType);
@@ -651,7 +692,10 @@ public class CalculatorController implements Initializable {
         }
     }
 
-    public void processEqualsOperation() {
+    /**
+     * Finishes any existing operation
+     */
+    public void equalsAction() {
         try {
             if (!currentOp.hasType() || currentOp.isEager()) {
                 return;
@@ -662,7 +706,6 @@ public class CalculatorController implements Initializable {
                 currentOp.setX(getDoubleFromInput());
             }
             currentOp.setResult(opManager.resolve(currentOp));
-            currentOp.setResolvable(false);
             updateCustomLogScreen(logScreenTextFlow, currentOp.toString(), new ArrayList<>());
             setCalcInputText(currentOp.getResultLabel());
         } catch (RemoteException e) {
@@ -671,16 +714,20 @@ public class CalculatorController implements Initializable {
     }
 
     /**
-     *  Forces a click on the ConnectToggle button to unselect it thus to disconnect
+     * Forces a click on the ConnectToggle button to unselect it thus to disconnect
      */
     private void forceDisconnect() {
         System.err.println("Connection lost. Please reconnect.");
-        updateLogScreen("Connection lost. Please reconnect.", Colors.ERROR.toString());
+        updateCustomLogScreen(logScreenTextFlow, "Connection lost. Please reconnect.", Arrays.asList(new String[][]{new String[]{Colors.ERROR.toString()}}));
         if (toggleButtonConnect.isSelected()) {
             toggleButtonConnect.fire();
         }
     }
 
+    /**
+     * A shorthand to get the Double value from the input
+     * @return
+     */
     private Double getDoubleFromInput() {
         return parseInputNumber(getCalcInputText());
     }
