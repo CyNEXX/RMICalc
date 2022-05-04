@@ -13,6 +13,7 @@ public class Validation {
     private static final Pattern portPattern = Pattern.compile("^\\d{1,5}$");
     private static final Pattern simpleInt = Pattern.compile("^-?((\\d)+\\.0+)$");
     private static final Pattern noPeriod = Pattern.compile("^-?\\d+$");
+    private static final Pattern digitalInput = Pattern.compile("^\\d+\\.?\\d*$");
 
     private static final Map<String, Pattern> patternMap = new HashMap<>();
 
@@ -21,6 +22,7 @@ public class Validation {
         patternMap.put("portPattern", portPattern);
         patternMap.put("simpleInt", simpleInt);
         patternMap.put("noPeriod", noPeriod);
+        patternMap.put("digitalInput", digitalInput);
     }
 
     static class AbstractValidation {

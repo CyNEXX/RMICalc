@@ -30,6 +30,7 @@ import static controllers.LogScreenController.updateCustomLogScreen;
 
 
 import static utilities.Manipulation.*;
+
 import utilities.Colors;
 
 /*enum Colors {
@@ -507,7 +508,9 @@ public class CalculatorController implements Initializable {
             if (newInput || getCalcInputText().equals("0")) {
                 setCalcInputText(trimNumberIfPossible(a).toString());
             } else {
-                setCalcInputText(trimNumberIfPossible(Double.parseDouble(getCalcInputText() + a)).toString());
+                String newString = getCalcInputText() + a;
+                if (validate(newString, new String[]{"digitalInput"}))
+                    setCalcInputText(newString);
             }
             if (newInput) {
                 newInput = false;
